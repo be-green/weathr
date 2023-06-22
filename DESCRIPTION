@@ -1,0 +1,10 @@
+Package: weathr
+Type: Package
+Title: Get the US Government Weather Forecast
+Version: 0.1.0
+Author: Brice Green <brice.c.green@gmail.com>
+Maintainer: Brice Green <brice.c.green@gmail.com>
+Description: Pings the US Weather API
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
