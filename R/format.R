@@ -1,7 +1,9 @@
 #' Make Nice Times for Printing from Hourly Info
 #' @param datetimes
 nice_times = function(datetimes) {
-  strftime(datetimes, "%I%p")
+  gsub(x = strftime(datetimes, "%I:%M %p"),
+       pattern = "^0",
+       replacement = "")
 }
 
 ptol_sunset = function() {
@@ -30,30 +32,36 @@ text_colors = function(hex_list) {
   grDevices::gray(1 - luminance)
 }
 
-#' Get color palette for temperature colors
-#' @param temp temperature vector
-#' @param palette function returning color palette
-#' @importFrom cli make_ansi_style
-temperature_colors = function(temps, palette = ptol_nightfall) {
+#' build styles
+#' @importFrom cli combine_ansi_styles
+#' @param palette function that returns a palette
+build_styles = function(palette) {
   pal = palette()
   text = text_colors(pal)
   styles = sapply(pal, cli::make_ansi_style, bg = T)
   tstyles = sapply(text, cli::make_ansi_style, bg = F)
-  num_breaks = length(pal)
-  breakpoints = seq(-50, 150, by = 200 / num_breaks)
-  interval = findInterval(temps, breakpoints)
-  list(
-    bg_style = styles[interval],
-    text_style = tstyles[interval]
-  )
+  for (i in 1:length(styles) ) {
+    styles[[i]] = cli::combine_ansi_styles(styles[[i]], tstyles[[i]])
+  }
+  styles
+}
+
+#' Get color palette for temperature colors
+#' @param temp temperature vector
+#' @param palette function returning color palette
+#' @importFrom cli make_ansi_style
+temperature_colors = function(temps, styles) {
+  num_breaks = length(styles)
+  breakpoints = seq(-20, 120, by = 140 / num_breaks)
+  interval = findInterval(temps, breakpoints, all.inside = T)
+  styles[interval]
 }
 
 cli_temperature_forecast = function(times, temps) {
   print_times = paste0(nice_times(times), ": ", temps)
-  styles = temperature_colors(temps)
-
+  styles = temperature_colors(temps, sunset_styles)
   for(i in 1:length(print_times)) {
-    cat(styles$text_style[[i]](styles$bg_style[[i]](print_times[i])))
+    cat(styles[[i]](print_times[i]))
     cat(" ")
   }
 }

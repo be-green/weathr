@@ -8,3 +8,10 @@ Description: Pings the US Weather API
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+Imports: 
+    cli,
+    grDevices,
+    jsonlite,
+    purrr,
+    txtplot
+RoxygenNote: 7.1.2
