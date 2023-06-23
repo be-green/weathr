@@ -1,5 +1,6 @@
 #' Get geocoded lat/lon from the census
-#' @param address
+#' @param address address to get the lat and lon from
+#' @importFrom jsonlite fromJSON
 get_location = function(address) {
 
   root = "https://geocoding.geo.census.gov/"
@@ -9,6 +10,7 @@ get_location = function(address) {
   match = jsonlite::fromJSON(
     paste0(root, path, query, "&benchmark=2020&format=json")
   )
+
   if(length(match$result$addressMatches) > 0) {
     message("Using matched address ",
             match$result$addressMatches$matchedAddress[1])
